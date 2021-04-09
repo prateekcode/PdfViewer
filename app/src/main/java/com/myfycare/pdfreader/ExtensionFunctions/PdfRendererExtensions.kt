@@ -5,10 +5,6 @@ import android.graphics.Bitmap.createBitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
-import android.os.ParcelFileDescriptor
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.io.File
 
 
 fun PdfRenderer.Page.renderAndClose(width: Int) = use{

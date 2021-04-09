@@ -16,6 +16,10 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, PdfViewer::class.java))
         }
 
+        multiplePageBtn.setOnClickListener {
+            startActivity(Intent(this, MainActivity2::class.java))
+        }
+
     }
 
 }

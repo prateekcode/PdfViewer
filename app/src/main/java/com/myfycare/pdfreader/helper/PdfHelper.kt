@@ -8,7 +8,7 @@ import java.io.InputStream
 
 object PdfHelper {
 
-    private fun copyToLocalCache(context: Context,outPutFile: File, @RawRes pdfResource: Int) {
+    fun copyToLocalCache(context: Context, outPutFile: File, @RawRes pdfResource: Int) {
         if (!outPutFile.exists()) {
             val input: InputStream = context.resources.openRawResource(pdfResource)
             val output = FileOutputStream(outPutFile)

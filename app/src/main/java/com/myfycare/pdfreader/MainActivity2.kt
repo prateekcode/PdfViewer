@@ -1,33 +1,32 @@
 package com.myfycare.pdfreader
 
 import android.graphics.pdf.PdfRenderer
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
-import android.os.PersistableBundle
 import android.util.DisplayMetrics
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.myfycare.pdfreader.adapter.PdfRecyclerAdapter
 import com.myfycare.pdfreader.helper.PdfHelper
-import kotlinx.android.synthetic.main.activity_multiple_pdf.*
+import kotlinx.android.synthetic.main.activity_main2.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.lang.Exception
 
-class MultiplePdfActivity : AppCompatActivity() {
+class MainActivity2 : AppCompatActivity() {
 
     private lateinit var multiplePdfRecycler: RecyclerView
     private lateinit var pdfAdapter: PdfRecyclerAdapter
     var pdfRenderer: PdfRenderer? = null
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-        setContentView(R.layout.activity_multiple_pdf)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main2)
 
-        multiplePdfRecycler = multiplePdfRv
+        multiplePdfRecycler = rv_pdf
         val file = File(cacheDir, PdfViewer.FILE_NAME)
         PdfHelper.copyToLocalCache(applicationContext, file, R.raw.test)
 
