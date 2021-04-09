@@ -1,4 +1,4 @@
-package com.myfycare.pdfreader
+package com.myfycare.pdfreader.activities
 
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.ImageView
 import androidx.annotation.RawRes
 import androidx.appcompat.app.AppCompatActivity
+import com.myfycare.pdfreader.R
 import kotlinx.android.synthetic.main.activity_pdf_viewer.*
 import java.io.File
 import java.io.FileOutputStream
