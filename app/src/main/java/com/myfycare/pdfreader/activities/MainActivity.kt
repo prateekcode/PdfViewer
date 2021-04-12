@@ -6,27 +6,26 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.myfycare.pdfreader.R
 import com.myfycare.pdfreader.adapter.FileAdapter
-import com.myfycare.pdfreader.adapter.PdfRecyclerAdapter
 import com.myfycare.pdfreader.helper.PdfHelper
 import com.myfycare.pdfreader.model.FileType
 import com.myfycare.pdfreader.permission.PermissionHelper
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.util.ArrayList
-import java.util.jar.Manifest
 
 
 class MainActivity : AppCompatActivity(), FileAdapter.OnItemClickListener {
 
     private var isGenerating = false
-    private lateinit var fileList:ArrayList<FileType>
+    private lateinit var fileList: ArrayList<FileType>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,13 +33,6 @@ class MainActivity : AppCompatActivity(), FileAdapter.OnItemClickListener {
 
         permissionCheck(true)
 
-        pdf_view.setOnClickListener {
-            startActivity(Intent(this, PdfViewer::class.java))
-        }
-
-        multiplePageBtn.setOnClickListener {
-            startActivity(Intent(this, MultipleViewer::class.java))
-        }
 
         val pdfList = recyclerView
 
@@ -55,29 +47,29 @@ class MainActivity : AppCompatActivity(), FileAdapter.OnItemClickListener {
         Log.d("LISTS", "---------> ${PdfHelper.searchAllThePdf(fullpath)}")
         val lastPdf = PdfHelper.pdfReaderNew(fullpath)
         var imgRes: Int
-        var newName :String
+        var newName: String
         var fileUri: Uri
-        for (i in lastPdf){
+        for (i in lastPdf) {
             Log.d("LAST_PDF", "Pdf's are ${i.name}")
             when {
                 i.name.endsWith(".pdf") -> {
                     imgRes = R.drawable.ic_pdf
-                    newName = i.name.replace(".pdf", ".pdf")
+                    newName = i.name
                     fileUri = i.toUri()
                 }
                 i.name.endsWith(".png") -> {
                     imgRes = R.drawable.ic_pngfile
-                    newName = i.name.replace(".png", ".png")
+                    newName = i.name
                     fileUri = i.toUri()
                 }
                 i.name.endsWith(".jpeg") -> {
                     imgRes = R.drawable.ic_jpgfile
-                    newName = i.name.replace(".jpeg", ".jpeg")
+                    newName = i.name
                     fileUri = i.toUri()
                 }
                 else -> {
                     imgRes = R.drawable.ic_jpgfile
-                    newName = i.name.replace(".jpg", ".jpg")
+                    newName = i.name
                     fileUri = i.toUri()
                 }
             }
@@ -85,27 +77,39 @@ class MainActivity : AppCompatActivity(), FileAdapter.OnItemClickListener {
             fileList.add(fileType)
         }
 
-        pdfList.adapter= FileAdapter(fileList, this)
+        pdfList.adapter = FileAdapter(fileList, this)
         pdfList.layoutManager = LinearLayoutManager(this)
     }
 
     override fun onClick(position: Int) {
         val fileLocation = fileList[position].fileTitle
-        val pdfUri = fileList[position].fileUri
-        Log.d("URI_OBTAINED", "URI is --> $pdfUri")
-        if (fileLocation.endsWith(".pdf")){
-            val pdfViewerIntent = Intent(this, MultipleViewer::class.java)
-            pdfViewerIntent.putExtra("pdf_file_path", fileLocation)
-            pdfViewerIntent.putExtra("pdf_uri", pdfUri.toString())
-            startActivity(pdfViewerIntent)
-        }else{
-            Log.d("TAG", "Not a pdf file")
+        val commonUri = fileList[position].fileUri
+        Log.d("URI_OBTAINED", "URI is --> $commonUri")
+        when {
+            fileLocation.endsWith(".pdf") -> {
+                val pdfViewerIntent = Intent(this, MultipleViewer::class.java)
+                pdfViewerIntent.putExtra("pdf_file_path", fileLocation)
+                pdfViewerIntent.putExtra("pdf_uri", commonUri.toString())
+                startActivity(pdfViewerIntent)
+            }
+            fileLocation.endsWith(".jpg") ||
+                    fileLocation.endsWith(".png") ||
+                    fileLocation.endsWith(".jpeg") ->
+            {
+                val imageViewerIntent = Intent(this, ImageViewer::class.java)
+                imageViewerIntent.putExtra("image_name", fileLocation)
+                imageViewerIntent.putExtra("image_uri", commonUri.toString())
+                startActivity(imageViewerIntent)
+                Log.d("IMAGE FILES", "Yayyy.. this is image file")
+            }
+            else -> {
+                Toast.makeText(applicationContext, "File Not Supported", Toast.LENGTH_SHORT).show()
+                Log.d("TAG", "Not a pdf file")
+            }
         }
 
         Log.d("TAG", "onClick: $position and the location is $fileLocation")
     }
-
-
 
 
     private fun permissionCheck(check: Boolean) {
@@ -147,7 +151,6 @@ class MainActivity : AppCompatActivity(), FileAdapter.OnItemClickListener {
             Log.d("Permission check", "Individual Permission Granted")
         }
     }
-
 
 
 }

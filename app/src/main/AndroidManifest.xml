@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PdfReader">
         <activity android:name=".activities.MultipleViewer"/>
-        <activity android:name=".activities.PdfViewer" />
+        <activity android:name=".activities.ImageViewer" />
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -37,9 +37,24 @@ class FileAdapter
         }
 
         fun bind(files: FileType){
+            val fileName: String
             val fileThumbnail = itemView.file_icon
             Glide.with(itemView).load(files.fileThumbnail).into(fileThumbnail)
-            itemView.file_name_text_view.text = files.fileTitle
+            fileName = when {
+                files.fileTitle.endsWith(".pdf") -> {
+                    files.fileTitle.replace(".pdf", "")
+                }
+                files.fileTitle.endsWith(".png") -> {
+                    files.fileTitle.replace(".png", "")
+                }
+                files.fileTitle.endsWith(".jpg") -> {
+                    files.fileTitle.replace(".jpg", "")
+                }
+                else -> {
+                    files.fileTitle.replace(".jpeg", "")
+                }
+            }
+            itemView.file_name_text_view.text = fileName
         }
     }
 

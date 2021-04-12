@@ -15,6 +15,7 @@ import kotlin.math.absoluteValue
 
 object PdfHelper {
 
+    //For file available in the raw
     fun copyToLocalCache(context: Context, outPutFile: File, @RawRes pdfResource: Int) {
         if (!outPutFile.exists()) {
             val input: InputStream = context.resources.openRawResource(pdfResource)
@@ -29,6 +30,7 @@ object PdfHelper {
         }
     }
 
+    //For local storage
     private fun copyToLocalCacheNew(context: Context, outPutFile: File, uri: Uri) {
         if (!outPutFile.exists()) {
             val input: InputStream = context.contentResolver.openInputStream(uri)!!
@@ -43,11 +45,13 @@ object PdfHelper {
         }
     }
 
+    //For Local Storage
     fun openPdfFromStorage(context: Context, uri: Uri, fileName: String){
         val fileCopy = File(context.cacheDir, fileName)
         copyToLocalCacheNew(context, fileCopy, uri)
     }
 
+    //For Assets
     fun openRenderer(context: Context, file: File){
         //val file = File(context.cacheDir, fileName)
         if (!file.exists()){

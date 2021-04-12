@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +18,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.lang.NullPointerException
+import java.lang.StringBuilder
 
 class MultipleViewer : AppCompatActivity() {
 
@@ -41,11 +43,15 @@ class MultipleViewer : AppCompatActivity() {
         //newFile = File(file_location)
 
         multiplePdfRecycler = rv_pdf
+        supportActionBar!!.title = file_location
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         val file = File(cacheDir, file_location!!)
         //PdfHelper.copyToLocalCache(applicationContext, file, R.raw.test)
         // PdfHelper.copyToLocalCache(applicationContext, file, R.raw.test)
         //PdfHelper.openRenderer(applicationContext, File(cacheDir, file_location))
+
+
 
 
         PdfHelper.openPdfFromStorage(applicationContext, file_uri.toUri(), file_location)
@@ -78,6 +84,16 @@ class MultipleViewer : AppCompatActivity() {
             else -> exception.localizedMessage
         }
         Log.d("PDF Renderer exception", message)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 }
