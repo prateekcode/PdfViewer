@@ -1,23 +1,32 @@
 package com.myfycare.pdfreader.activities
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.myfycare.pdfreader.R
+import com.myfycare.pdfreader.adapter.FileAdapter
+import com.myfycare.pdfreader.adapter.PdfRecyclerAdapter
 import com.myfycare.pdfreader.helper.PdfHelper
+import com.myfycare.pdfreader.model.FileType
 import com.myfycare.pdfreader.permission.PermissionHelper
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
+import java.util.ArrayList
 import java.util.jar.Manifest
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), FileAdapter.OnItemClickListener {
 
     private var isGenerating = false
+    private lateinit var fileList:ArrayList<FileType>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,12 +42,71 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, MultipleViewer::class.java))
         }
 
+        val pdfList = recyclerView
+
+
         val gpath: String = Environment.getExternalStorageDirectory().absolutePath
         val spath = ""
-        val fullpath = File(gpath + File.separator + spath)
+        val fullpath = File(gpath + File.separator + "/TestReport" + spath)
         PdfHelper.searchAllThePdf(fullpath)
 
+        fileList = ArrayList<FileType>()
+
+        Log.d("LISTS", "---------> ${PdfHelper.searchAllThePdf(fullpath)}")
+        val lastPdf = PdfHelper.pdfReaderNew(fullpath)
+        var imgRes: Int
+        var newName :String
+        var fileUri: Uri
+        for (i in lastPdf){
+            Log.d("LAST_PDF", "Pdf's are ${i.name}")
+            when {
+                i.name.endsWith(".pdf") -> {
+                    imgRes = R.drawable.ic_pdf
+                    newName = i.name.replace(".pdf", ".pdf")
+                    fileUri = i.toUri()
+                }
+                i.name.endsWith(".png") -> {
+                    imgRes = R.drawable.ic_pngfile
+                    newName = i.name.replace(".png", ".png")
+                    fileUri = i.toUri()
+                }
+                i.name.endsWith(".jpeg") -> {
+                    imgRes = R.drawable.ic_jpgfile
+                    newName = i.name.replace(".jpeg", ".jpeg")
+                    fileUri = i.toUri()
+                }
+                else -> {
+                    imgRes = R.drawable.ic_jpgfile
+                    newName = i.name.replace(".jpg", ".jpg")
+                    fileUri = i.toUri()
+                }
+            }
+            val fileType = FileType(imgRes, newName, fileUri)
+            fileList.add(fileType)
+        }
+
+        pdfList.adapter= FileAdapter(fileList, this)
+        pdfList.layoutManager = LinearLayoutManager(this)
     }
+
+    override fun onClick(position: Int) {
+        val fileLocation = fileList[position].fileTitle
+        val pdfUri = fileList[position].fileUri
+        Log.d("URI_OBTAINED", "URI is --> $pdfUri")
+        if (fileLocation.endsWith(".pdf")){
+            val pdfViewerIntent = Intent(this, MultipleViewer::class.java)
+            pdfViewerIntent.putExtra("pdf_file_path", fileLocation)
+            pdfViewerIntent.putExtra("pdf_uri", pdfUri.toString())
+            startActivity(pdfViewerIntent)
+        }else{
+            Log.d("TAG", "Not a pdf file")
+        }
+
+        Log.d("TAG", "onClick: $position and the location is $fileLocation")
+    }
+
+
+
 
     private fun permissionCheck(check: Boolean) {
         val permissionHelper = PermissionHelper(
@@ -79,5 +147,7 @@ class MainActivity : AppCompatActivity() {
             Log.d("Permission check", "Individual Permission Granted")
         }
     }
+
+
 
 }
